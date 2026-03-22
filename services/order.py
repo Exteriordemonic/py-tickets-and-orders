@@ -5,7 +5,8 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from db.models import MovieSession, Order, Ticket
+from db.models import Order, Ticket
+from services.movie_session import get_movie_session_by_id
 
 
 user = get_user_model()
@@ -22,9 +23,7 @@ def create_order(
     order = Order.objects.create(user=db_user, created_at=created_at)
     for ticket in tickets:
         Ticket.objects.create(
-            movie_session=MovieSession.objects.get(
-                id=ticket.get("movie_session")
-            ),
+            movie_session=get_movie_session_by_id(ticket.get("movie_session")),
             order=order,
             row=ticket.get("row"),
             seat=ticket.get("seat"),
